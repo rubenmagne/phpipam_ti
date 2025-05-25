@@ -1,0 +1,4 @@
+[client]
+user=root
+password=tu_contraseña_root
+host=localhost 

@@ -14,6 +14,16 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
+# Solicitar contraseña de MySQL
+echo -e "${YELLOW}Por favor, ingrese la contraseña de MySQL root:${NC}"
+read -s MYSQL_ROOT_PASSWORD
+
+# Verificar conexión a MySQL
+if ! mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "SELECT 1" >/dev/null 2>&1; then
+    echo -e "${RED}Error: No se pudo conectar a MySQL. Verifique la contraseña.${NC}"
+    exit 1
+fi
+
 # Actualizar repositorios
 echo -e "${YELLOW}Actualizando repositorios...${NC}"
 apt-get update
@@ -42,14 +52,14 @@ chmod -R 755 /var/www/html/phpipam
 
 # Crear base de datos
 echo -e "${YELLOW}Creando base de datos...${NC}"
-mysql -e "CREATE DATABASE IF NOT EXISTS phpipam;"
-mysql -e "CREATE USER IF NOT EXISTS 'phpipam'@'localhost' IDENTIFIED BY 'phpipam123';"
-mysql -e "GRANT ALL PRIVILEGES ON phpipam.* TO 'phpipam'@'localhost';"
-mysql -e "FLUSH PRIVILEGES;"
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS phpipam;"
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "CREATE USER IF NOT EXISTS 'phpipam'@'localhost' IDENTIFIED BY 'phpipam123';"
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "GRANT ALL PRIVILEGES ON phpipam.* TO 'phpipam'@'localhost';"
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" -e "FLUSH PRIVILEGES;"
 
 # Crear tabla DNS
 echo -e "${YELLOW}Creando tabla DNS...${NC}"
-mysql phpipam << EOF
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" phpipam << EOF
 CREATE TABLE IF NOT EXISTS dns_records (
     id INT AUTO_INCREMENT PRIMARY KEY,
     hostname VARCHAR(255) NOT NULL,
@@ -72,4 +82,7 @@ echo -e "${YELLOW}Accede a http://localhost/phpipam para comenzar a usar el mód
 echo -e "${YELLOW}Credenciales de la base de datos:${NC}"
 echo -e "Usuario: phpipam"
 echo -e "Contraseña: phpipam123"
-echo -e "Base de datos: phpipam" 
+echo -e "Base de datos: phpipam"
+
+# Limpiar la variable de contraseña
+unset MYSQL_ROOT_PASSWORD 

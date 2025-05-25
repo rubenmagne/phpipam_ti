@@ -14,17 +14,29 @@ Este módulo extiende la funcionalidad de phpIPAM para gestionar registros DNS d
 
 1. Clona este repositorio:
 ```bash
-git clone https://github.com/tu-usuario/phpipam-dns.git
-cd phpipam-dns
+git clone https://github.com/rubenmagne/phpipam_ti.git
+cd phpipam_ti
 ```
 
-2. Ejecuta el script de instalación como root:
+2. Configura MySQL:
+   - Asegúrate de tener MySQL instalado y funcionando
+   - Verifica que el usuario root tenga una contraseña configurada
+   - Si no tienes contraseña para root, puedes configurarla con:
+     ```bash
+     sudo mysql_secure_installation
+     ```
+
+3. Ejecuta el script de instalación como root:
 ```bash
 chmod +x install.sh
 sudo ./install.sh
 ```
+   - El script te pedirá la contraseña de MySQL root
+   - Si prefieres no ingresar la contraseña manualmente, puedes:
+     a) Editar el archivo mysql_config.cnf con tus credenciales
+     b) Usar el archivo de configuración: `sudo ./install.sh --config mysql_config.cnf`
 
-3. Accede a la aplicación:
+4. Accede a la aplicación:
 ```
 http://localhost/phpipam
 ```
@@ -43,6 +55,7 @@ phpipam-dns/
 │   └── classes/
 │       └── class.DNS.php
 ├── install.sh
+├── mysql_config.cnf
 └── README.md
 ```
 
@@ -63,6 +76,35 @@ phpipam-dns/
    - Añadir nuevos registros
    - Editar registros existentes
    - Eliminar registros
+
+## Solución de Problemas
+
+### Error de Acceso a MySQL
+Si recibes un error de acceso denegado a MySQL:
+1. Verifica que MySQL esté instalado y funcionando:
+   ```bash
+   sudo systemctl status mysql
+   ```
+2. Asegúrate de que el usuario root tenga una contraseña:
+   ```bash
+   sudo mysql_secure_installation
+   ```
+3. Intenta conectarte manualmente a MySQL:
+   ```bash
+   mysql -u root -p
+   ```
+
+### Error de Permisos
+Si tienes problemas de permisos:
+1. Verifica los permisos del directorio:
+   ```bash
+   sudo chown -R www-data:www-data /var/www/html/phpipam
+   sudo chmod -R 755 /var/www/html/phpipam
+   ```
+2. Verifica los logs de Apache:
+   ```bash
+   sudo tail -f /var/log/apache2/error.log
+   ```
 
 ## Seguridad
 
