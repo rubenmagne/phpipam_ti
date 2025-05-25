@@ -9,6 +9,7 @@ $User->check_user_session();
 # include required files
 require_once('app/dns/config.php');
 require_once('app/dns/menu.php');
+require_once('app/dns/register.php');
 
 # check if module is enabled
 if ($Tools->is_module_enabled("DNS")) {

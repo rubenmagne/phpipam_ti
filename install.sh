@@ -71,12 +71,43 @@ CREATE TABLE IF NOT EXISTS dns_records (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS modules (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(64) NOT NULL,
+    version VARCHAR(32) NOT NULL,
+    description TEXT,
+    menu_order INT DEFAULT 0,
+    menu_icon VARCHAR(32),
+    menu_name VARCHAR(64),
+    menu_href VARCHAR(64),
+    menu_visible TINYINT(1) DEFAULT 1,
+    menu_parent VARCHAR(64),
+    menu_position VARCHAR(32) DEFAULT 'left',
+    menu_show TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY name (name)
+);
 EOF
 
 # Habilitar módulo en phpIPAM
 echo -e "${YELLOW}Habilitando módulo DNS...${NC}"
 mysql -u root -p"$MYSQL_ROOT_PASSWORD" phpipam << EOF
 INSERT INTO settings (name, value) VALUES ('enableDNS', '1') ON DUPLICATE KEY UPDATE value = '1';
+INSERT INTO modules (name, version, description, menu_order, menu_icon, menu_name, menu_href, menu_visible, menu_parent, menu_position, menu_show) 
+VALUES ('DNS', '1.0', 'DNS records management module', 50, 'fa-server', 'DNS', 'dns', 1, NULL, 'left', 1)
+ON DUPLICATE KEY UPDATE 
+version = '1.0',
+description = 'DNS records management module',
+menu_order = 50,
+menu_icon = 'fa-server',
+menu_name = 'DNS',
+menu_href = 'dns',
+menu_visible = 1,
+menu_parent = NULL,
+menu_position = 'left',
+menu_show = 1;
 EOF
 
 # Reiniciar servicios
