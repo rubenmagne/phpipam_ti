@@ -38,12 +38,13 @@ pear install Net_DNS2
 
 # Crear directorio para la aplicación
 echo -e "${YELLOW}Creando directorio de la aplicación...${NC}"
-mkdir -p /var/www/html/phpipam
+mkdir -p /var/www/html/phpipam/app/dns
+mkdir -p /var/www/html/phpipam/functions/classes
 
 # Copiar archivos
 echo -e "${YELLOW}Copiando archivos...${NC}"
-cp -r app/ /var/www/html/phpipam/
-cp -r functions/ /var/www/html/phpipam/
+cp -r app/dns/* /var/www/html/phpipam/app/dns/
+cp -r functions/classes/* /var/www/html/phpipam/functions/classes/
 
 # Configurar permisos
 echo -e "${YELLOW}Configurando permisos...${NC}"
@@ -70,6 +71,12 @@ CREATE TABLE IF NOT EXISTS dns_records (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+EOF
+
+# Habilitar módulo en phpIPAM
+echo -e "${YELLOW}Habilitando módulo DNS...${NC}"
+mysql -u root -p"$MYSQL_ROOT_PASSWORD" phpipam << EOF
+INSERT INTO settings (name, value) VALUES ('enableDNS', '1') ON DUPLICATE KEY UPDATE value = '1';
 EOF
 
 # Reiniciar servicios
