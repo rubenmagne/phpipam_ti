@@ -1,7 +1,45 @@
+# Archivos de configuración
+config.php
+
+# Archivos de log
+*.log
+logs/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*~
+
+# Archivos de IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de dependencias
+vendor/
+composer.lock
+
+# Archivos de backup
+*.bak
+*.backup
+*.old
+
+# Archivos de sesión
+sessions/
+*.sess
+
+# Archivos de caché
+cache/
+*.cache
+
 db/bkp
 app/subnets/import-subnet/upload/
 app/admin/import-export/upload/
-config.php
 css/*/images/logo/logo.png
 functions/scripts/custom/
 api/_lock.txt

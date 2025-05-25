@@ -307,4 +307,154 @@ class DNS extends Common_functions {
 			return false;
 		}
 	}
+
+	/**
+	 * Get all DNS records
+	 *
+	 * @return array|false
+	 */
+	public function get_all_records() {
+		try {
+			$query = "SELECT * FROM `dns_records` ORDER BY `hostname` ASC;";
+			$records = $this->Database->getObjectsQuery($query);
+			return $records;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Get single DNS record
+	 *
+	 * @param int $id
+	 * @return object|false
+	 */
+	public function get_record($id) {
+		try {
+			$query = "SELECT * FROM `dns_records` WHERE `id` = ?;";
+			$record = $this->Database->getObjectQuery($query, array($id));
+			return $record;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Add new DNS record
+	 *
+	 * @param array $values
+	 * @return bool
+	 */
+	public function add_record($values) {
+		try {
+			# prepare values
+			$values = array(
+				"hostname" => $values['hostname'],
+				"ip_addr" => $values['ip_addr'],
+				"record_type" => $values['record_type'],
+				"ttl" => $values['ttl'],
+				"description" => $values['description']
+			);
+
+			# insert record
+			$query = "INSERT INTO `dns_records` (`hostname`, `ip_addr`, `record_type`, `ttl`, `description`) VALUES (?, ?, ?, ?, ?);";
+			$this->Database->insertQuery($query, array_values($values));
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Update DNS record
+	 *
+	 * @param int $id
+	 * @param array $values
+	 * @return bool
+	 */
+	public function update_record($id, $values) {
+		try {
+			# prepare values
+			$values = array(
+				"hostname" => $values['hostname'],
+				"ip_addr" => $values['ip_addr'],
+				"record_type" => $values['record_type'],
+				"ttl" => $values['ttl'],
+				"description" => $values['description']
+			);
+
+			# update record
+			$query = "UPDATE `dns_records` SET `hostname` = ?, `ip_addr` = ?, `record_type` = ?, `ttl` = ?, `description` = ? WHERE `id` = ?;";
+			$values[] = $id;
+			$this->Database->updateQuery($query, array_values($values));
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Delete DNS record
+	 *
+	 * @param int $id
+	 * @return bool
+	 */
+	public function delete_record($id) {
+		try {
+			$query = "DELETE FROM `dns_records` WHERE `id` = ?;";
+			$this->Database->deleteQuery($query, array($id));
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Search DNS records
+	 *
+	 * @param string $term
+	 * @return array|false
+	 */
+	public function search_records($term) {
+		try {
+			$query = "SELECT * FROM `dns_records` WHERE `hostname` LIKE ? OR `ip_addr` LIKE ? OR `description` LIKE ? ORDER BY `hostname` ASC;";
+			$term = "%$term%";
+			$records = $this->Database->getObjectsQuery($query, array($term, $term, $term));
+			return $records;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Get records by type
+	 *
+	 * @param string $type
+	 * @return array|false
+	 */
+	public function get_records_by_type($type) {
+		try {
+			$query = "SELECT * FROM `dns_records` WHERE `record_type` = ? ORDER BY `hostname` ASC;";
+			$records = $this->Database->getObjectsQuery($query, array($type));
+			return $records;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
+
+	/**
+	 * Get records by IP address
+	 *
+	 * @param string $ip
+	 * @return array|false
+	 */
+	public function get_records_by_ip($ip) {
+		try {
+			$query = "SELECT * FROM `dns_records` WHERE `ip_addr` = ? ORDER BY `hostname` ASC;";
+			$records = $this->Database->getObjectsQuery($query, array($ip));
+			return $records;
+		} catch (Exception $e) {
+			return false;
+		}
+	}
 }
